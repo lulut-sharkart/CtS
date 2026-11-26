@@ -453,7 +453,7 @@ $('#btnAuth').onclick=async()=>{
     else res=await sb.auth.signInWithPassword({email,password});
     if(res.error)throw res.error;
     S.user=res.data.user||res.data.session.user;await enter();
-  }catch(e){const m=e.message||'Gagal';$('#authMsg').textContent=/not confirmed/i.test(m)?'Email belum terkonfirmasi. Jalankan schema.sql (bagian 1) di Supabase SQL Editor, lalu masuk lagi.':/invalid login/i.test(m)?'Username atau kata sandi salah.':/already registered/i.test(m)?'Username sudah dipakai.':m;}
+  }catch(e){const m=e.message||'Gagal';$('#authMsg').textContent=/email.*(logins|signups).*disabled|signups? not allowed/i.test(m)?'Login di server belum aktif: di Supabase buka Authentication > Sign In / Providers > Email, nyalakan "Enable Email provider" dan "Allow new users to sign up", matikan "Confirm email", lalu Save.':/not confirmed/i.test(m)?'Email belum terkonfirmasi. Jalankan schema.sql (bagian 1) di Supabase SQL Editor, lalu masuk lagi.':/invalid login/i.test(m)?'Username atau kata sandi salah.':/already registered/i.test(m)?'Username sudah dipakai.':m;}
   $('#btnAuth').disabled=false;
 };
 $('#btnGoogle').onclick=async()=>{
@@ -821,7 +821,7 @@ function draw(){
   if(B.rage>0){cx.textAlign='left';cx.font='bold 12px system-ui';cx.fillStyle='#fecdd3';cx.fillText(`⚔ Amukan ${B.rage.toFixed(1)}s`,18,gy*.34+40);}
   if(B.hitFlash>0){cx.fillStyle=`rgba(244,63,94,${B.hitFlash*.7})`;cx.fillRect(0,0,W,Hh);}
 }
-function loop(t){const dt=Math.min(.05,(t-last)/1000);last=t;if(S.P&&!$('#game').hidden){if($('#modal').hidden)update(dt);draw();}requestAnimationFrame(loop);}
+function loop(t){const dt=Math.min(.05,(t-last)/1000);last=t;if(S.P&&!$('#game').hidden){if($('#modal').hidden){try{update(dt);}catch(e){console.error(e);}}try{draw();}catch(e){console.error(e);try{cx.restore();cx.restore();}catch(_){}}}requestAnimationFrame(loop);}
 
 function renderSkillBar(){
   const bar=$('#skillbar');bar.innerHTML='';
@@ -1419,7 +1419,7 @@ const star5=(x,y,r,rot)=>{cx.beginPath();for(let i=0;i<10;i++){const a=rot+i*Mat
 const _draw3=draw;draw=function(){_draw3();if(!S.hs)return;const hx=B.hx,hy=GYv-B.hy-62,t=B.t,wk=wpOf(heroWpName()).k;
   cx.save();cx.globalCompositeOperation='lighter';
   if(wk==='shining'){const form=B.shine,col=form?SHINE[form].col:rainbow(),R=44;
-    const g=cx.createRadialGradient(hx-6,hy,6,hx-6,hy,R*2.2);g.addColorStop(0,'#fff6');g.addColorStop(.4,col+'44');g.addColorStop(1,col+'00');cx.fillStyle=g;cx.fillRect(hx-110,hy-110,220,220);
+    const g=cx.createRadialGradient(hx-6,hy,6,hx-6,hy,R*2.2);g.addColorStop(0,'#ffffff66');g.addColorStop(.4,'#ffffff22');g.addColorStop(1,'#ffffff00');cx.fillStyle=g;cx.fillRect(hx-110,hy-110,220,220);
     cx.translate(hx-6,hy);for(let L=0;L<3;L++){cx.save();cx.rotate(t*(L%2?-.7:.9)+L);cx.strokeStyle=L===0?'#fff':rainbow(L*80);cx.lineWidth=3-L*.7;cx.shadowColor=col;cx.shadowBlur=16;cx.beginPath();cx.arc(0,0,R+L*9,0,5.2+L);cx.stroke();cx.restore();}
     cx.save();cx.rotate(t*.6);cx.fillStyle='#fff';for(let i=0;i<18;i++){cx.rotate(.349);cx.globalAlpha=.4+.5*Math.abs(Math.sin(t*3+i));cx.fillRect(R+16,-1.2,i%3?10:22,2.4);}cx.restore();cx.globalAlpha=1;
     for(let i=1;i<=9;i++){const a=-1.57+i*.698+t*.3,on=form===i;cx.fillStyle=on?'#fff':SHINE[i].col+'77';cx.shadowColor=SHINE[i].col;cx.shadowBlur=on?22:6;star5(Math.cos(a)*(R+34),Math.sin(a)*(R+34),on?7:4,t+i);}
